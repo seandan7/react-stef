@@ -21,31 +21,49 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 //     document.getElementById('app')
 // )
 
-var App = function (_React$Component) {
-    _inherits(App, _React$Component);
+var TextAreaCounter = function (_React$Component) {
+    _inherits(TextAreaCounter, _React$Component);
 
-    function App() {
-        _classCallCheck(this, App);
+    function TextAreaCounter(props) {
+        _classCallCheck(this, TextAreaCounter);
 
-        return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (TextAreaCounter.__proto__ || Object.getPrototypeOf(TextAreaCounter)).call(this, props));
+
+        _this.state = {
+            charCount: null
+        };
+        _this.wordCount = _this.wordCount.bind(_this);
+        return _this;
     }
 
-    _createClass(App, [{
+    _createClass(TextAreaCounter, [{
+        key: "wordCount",
+        value: function wordCount(e) {
+            var currentText = e.target.value;
+            var characterCount = currentText.length;
+            this.setState({
+                charCount: characterCount
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
-                "h1",
+                "div",
                 null,
-                "Hello ",
-                this.props.name
+                React.createElement("textarea", { onChange: this.wordCount }),
+                React.createElement(
+                    "h3",
+                    null,
+                    this.state.charCount
+                )
             );
         }
     }]);
 
-    return App;
+    return TextAreaCounter;
 }(React.Component);
 
-App.defaultProps = {
-    name: "Test"
-};
-ReactDOM.render(React.createElement(App, null), document.getElementById('app'));
+ReactDOM.render(React.createElement(TextAreaCounter, {
+    text: "Bobs"
+}), document.getElementById('app'));

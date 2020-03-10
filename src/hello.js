@@ -13,17 +13,35 @@
 //     document.getElementById('app')
 // )
 
-class App extends React.Component {
+class TextAreaCounter extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            charCount: null
+        }
+        this.wordCount = this.wordCount.bind(this);
+    }
+    wordCount(e) {
+        var currentText = e.target.value;
+        var characterCount = currentText.length;
+        this.setState({
+            charCount: characterCount
+        });
+    }
     render() {
-        return(
-            <h1>Hello {this.props.name}</h1>
+        return (
+            <div>
+                <textarea  onChange={this.wordCount}>
+                </textarea>
+                <h3>{this.state.charCount}</h3>
+            </div>
         )
     }
 }
-App.defaultProps = {
-    name: "Test"
-}
+
 ReactDOM.render(
-    <App />,
+    React.createElement(TextAreaCounter, {
+        text: "Bobs",
+    }),
     document.getElementById('app')
 )
