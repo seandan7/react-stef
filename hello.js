@@ -20,6 +20,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 //     ),
 //     document.getElementById('app')
 // )
+
 var App = function (_React$Component) {
     _inherits(App, _React$Component);
 
@@ -35,7 +36,8 @@ var App = function (_React$Component) {
             return React.createElement(
                 "h1",
                 null,
-                "Hello World"
+                "Hello ",
+                this.props.name
             );
         }
     }]);
@@ -43,6 +45,7 @@ var App = function (_React$Component) {
     return App;
 }(React.Component);
 
-ReactDOM.render(React.createElement(App, {
-    name: "test"
-}), document.getElementById('app'));
+App.defaultProps = {
+    name: "Test"
+};
+ReactDOM.render(React.createElement(App, null), document.getElementById('app'));
