@@ -1,5 +1,14 @@
 ReactDOM.render(
-    <h1>Hello world!</h1>,
 
+    React.createElement(
+        'h1',
+        {
+            className: 'class-1',
+            style: {
+                color: 'red'
+            }
+        },
+        "Hello World"
+    ),
     document.getElementById('app')
-);
+)
