@@ -1,47 +1,49 @@
-// ReactDOM.render(
+var headers = [
+    "Book", "Author", "Language"
+];
+var data = [
+    ["lotr", "Tolkien", "En"],
+    ["Fish", "Smith", "Es"],
+    ["Adventues of Joe", "Dean", "Es"]
+]
 
-//     React.createElement(
-//         'h1',
-//         {
-//             className: 'class-1',
-//             style: {
-//                 color: 'red'
-//             }
-//         },
-//         "Hello World"
-//     ),
-//     document.getElementById('app')
-// )
 
-class TextAreaCounter extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            charCount: null
-        }
-        this.wordCount = this.wordCount.bind(this);
-    }
-    wordCount(e) {
-        var currentText = e.target.value;
-        var characterCount = currentText.length;
-        this.setState({
-            charCount: characterCount
-        });
-    }
+class Excel extends React.Component {
+
     render() {
         return (
-            <div>
-                <textarea  onChange={this.wordCount}>
-                </textarea>
-                <h3>{this.state.charCount}</h3>
-            </div>
+            React.createElement('table', null,
+                React.createElement('thead', null,
+                    React.createElement('tr', null,
+                        this.props.headers.map(function (title, idx) {
+                            return React.createElement('th', {
+                                key: `${idx}-key`
+                            }, title)
+                        })
+                    )
+                ),
+                React.createElement('tbody', null,
+                    this.props.initalData.map(function (row, idx) {
+                        return (
+                            React.createElement('tr', {
+                                key: `${idx}-key`
+                            }, row.map(function (cell, idx) {
+                                return React.createElement('td', {
+                                    key: `${idx}-key`
+                                }, cell)
+                            }))
+                        );
+                    })
+                ),
+            )
         )
     }
 }
 
 ReactDOM.render(
-    React.createElement(TextAreaCounter, {
-        text: "Bobs",
+    React.createElement(Excel, {
+        headers: headers,
+        initalData: data
     }),
     document.getElementById('app')
 )
