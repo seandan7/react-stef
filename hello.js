@@ -17,19 +17,22 @@ var Excel = function (_React$Component) {
         _this._sort = function (e) {
             var column = e.target.cellIndex;
             var data = _this.state.data.slice();
-            console.log(data);
+            var descending = _this.state.sortby === column && !_this.state.descending;
             data.sort(function (a, b) {
-                return a[column] > b[column] ? 1 : -1;
+                return descending ? a[column] < b[column] ? 1 : -1 : a[column] > b[column] ? 1 : -1;
             });
             console.log(data);
             _this.setState({
-                data: data
+                data: data,
+                sortby: column
             });
         };
 
         _this.state = {
-            headers: headers,
-            data: data
+            headers: _this.props.headers,
+            data: _this.props.initialData,
+            sortby: null,
+            descending: false
         };
         return _this;
     }

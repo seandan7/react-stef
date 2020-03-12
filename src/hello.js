@@ -3,8 +3,10 @@ class Excel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            headers: headers,
-            data:  data
+            headers: this.props.headers,
+            data:  this.props.initialData,
+            sortby: null,
+            descending: false
         };
     }
 
@@ -12,13 +14,16 @@ class Excel extends React.Component {
     _sort = (e) => {
         var column = e.target.cellIndex;
         var data = this.state.data.slice();
-        console.log(data);
+        var descending = this.state.sortby === column && !this.state.descending;
         data.sort(function (a, b) {
-            return a[column] > b[column] ? 1 : -1;
+            return descending 
+            ? (a[column] < b[column] ? 1 : -1)
+            : (a[column] > b[column] ? 1 : -1)
         });
         console.log(data);
         this.setState({
             data: data,
+            sortby: column
         });
     }
 
