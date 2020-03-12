@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Logo from './components/Logo';
 import Excel from './components/Excel';
+import Button from './components/Button';
 
 var headers = [
   "Book", "Author", "Language", "Published", "Sales"
@@ -19,12 +20,15 @@ var data = [
 
 function App() {
   return (
-    
+
     <div className="App">
       <Logo />
+      <Button aria-label="Custom Aria Label" className="2nd-class" onClick={() => console.log('ouch')}>Alert this</Button>
+      <Button href="#">Follow Me</Button>
+
       <Excel headers={headers} initialData={data} />
     </div>
   );
 }
- 
+
 export default App;

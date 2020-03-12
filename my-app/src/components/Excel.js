@@ -1,4 +1,6 @@
 import React from 'react';
+import './Excel.css';
+
 
 class Excel extends React.Component {
 
@@ -168,7 +170,7 @@ class Excel extends React.Component {
 
     _renderTable() {
         return (
-            <table>
+            <table className="Excel">
                 <thead onClick={this._sort}>
                     <tr>{
                         this.props.headers.map(function (title, idx) {
