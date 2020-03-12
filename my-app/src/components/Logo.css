@@ -1,0 +1,8 @@
+.Logo {
+    background-image: url('https://placeholder.com/wp-content/uploads/2018/10/placeholder-1-1366x197.webp');
+    background-size: cover;
+    display: block;
+    margin: 1rem auto;
+    height: 55px;
+    width: 400px;
+}
