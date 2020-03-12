@@ -122,10 +122,11 @@ var Excel = function (_React$Component) {
     }, {
         key: '_renderToolbar',
         value: function _renderToolbar() {
+            var searchString = this.state.search ? 'close' : 'search';
             return React.createElement('button', {
                 onClick: this._toggleSearch,
                 className: 'toolbar'
-            }, 'search');
+            }, searchString);
         }
     }, {
         key: '_renderTable',
