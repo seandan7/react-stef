@@ -1,49 +1,71 @@
-var headers = [
-    "Book", "Author", "Language"
-];
-var data = [
-    ["lotr", "Tolkien", "En"],
-    ["Fish", "Smith", "Es"],
-    ["Adventues of Joe", "Dean", "Es"]
-]
-
-
 class Excel extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            headers: headers,
+            data:  data
+        };
+    }
+
+
+    _sort = (e) => {
+        var column = e.target.cellIndex;
+        var data = this.state.data.slice();
+        console.log(data);
+        data.sort(function (a, b) {
+            return a[column] > b[column] ? 1 : -1;
+        });
+        console.log(data);
+        this.setState({
+            data: data,
+        });
+    }
 
     render() {
         return (
             React.createElement('table', null,
-                React.createElement('thead', null,
+                React.createElement('thead', { onClick: this._sort },
                     React.createElement('tr', null,
                         this.props.headers.map(function (title, idx) {
-                            return React.createElement('th', {
-                                key: `${idx}-key`
-                            }, title)
+                            return React.createElement('th', { key: idx }, title);
                         })
                     )
                 ),
                 React.createElement('tbody', null,
-                    this.props.initalData.map(function (row, idx) {
+                    this.state.data.map(function (row, idx) {
                         return (
-                            React.createElement('tr', {
-                                key: `${idx}-key`
-                            }, row.map(function (cell, idx) {
-                                return React.createElement('td', {
-                                    key: `${idx}-key`
-                                }, cell)
-                            }))
+                            React.createElement('tr', { key: idx },
+                                row.map(function (cell, idx) {
+                                    return React.createElement('td', { key: idx }, cell);
+                                })
+                            )
                         );
                     })
-                ),
+                )
             )
         )
     }
-}
+};
+
+var headers = [
+    "Book", "Author", "Language", "Published", "Sales"
+];
+
+var data = [
+    ["The Lord of the Rings", "J. R. R. Tolkien", "English", "1954-1955", "150 million"],
+    ["Le Petit Prince (The Little Prince)", "Antoine de Saint-Exupéry", "French", "1943", "140 million"],
+    ["Harry Potter and the Philosopher's Stone", "J. K. Rowling", "English", "1997", "107 million"],
+    ["And Then There Were None", "Agatha Christie", "English", "1939", "100 million"],
+    ["Dream of the Red Chamber", "Cao Xueqin", "Chinese", "1754-1791", "100 million"],
+    ["The Hobbit", "J. R. R. Tolkien", "English", "1937", "100 million"],
+    ["She: A History of Adventure", "H. Rider Haggard", "English", "1887", "100 million"],
+];
 
 ReactDOM.render(
     React.createElement(Excel, {
         headers: headers,
-        initalData: data
+        initialData: data,
     }),
-    document.getElementById('app')
-)
+    document.getElementById("app")
+);
