@@ -20,19 +20,23 @@ class Excel extends React.Component {
             ? (a[column] < b[column] ? 1 : -1)
             : (a[column] > b[column] ? 1 : -1)
         });
-        console.log(data);
         this.setState({
             data: data,
-            sortby: column
+            sortby: column,
+            descending: descending
         });
     }
 
     render() {
+        
         return (
             React.createElement('table', null,
                 React.createElement('thead', { onClick: this._sort },
                     React.createElement('tr', null,
-                        this.props.headers.map(function (title, idx) {
+                        this.props.headers.map( (title, idx) => {
+                           if (this.state.sortby === idx) {
+                               title += this.state.descending ? '\u2191':'\u2193'
+                           }
                             return React.createElement('th', { key: idx }, title);
                         })
                     )
