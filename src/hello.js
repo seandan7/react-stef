@@ -2,7 +2,8 @@ class Excel extends React.Component {
 
     constructor(props) {
         super(props);
-        this._preSearchData = null
+        this._preSearchData = null;
+        this._log = [];
         this.state = {
             headers: this.props.headers,
             data: this.props.initialData,
@@ -11,6 +12,56 @@ class Excel extends React.Component {
             edit: null, // row: index, cell: index
             search: false
         };
+    }
+    _logSetState = (newState) => {
+        this._log.push(JSON.parse(JSON.stringify(
+            this._log.length === 0 ? this.state : newState
+        )));
+        this.setState(newState);
+    }
+    componentDidMount() {
+        console.log("mounted")
+        document.onkeydown = function (e) {
+            if (e.altKey && e.shiftKey && e.keyCode === 82) { // alt+shift+r
+                this._replay();
+            }
+        }.bind(this);
+    }
+    _download(format, ev) {
+        var contents = format === 'json'
+            ? JSON.stringify(this.state.data)
+            : this.state.data.reduce(function (result, row) {
+                return result +
+                    row.reduce(function (rowresult, cell, idx) {
+                        return rowresult +
+                            '"' +
+                            cell.replace(/"/g, '""') +
+                            '"' +
+                            (idx < row.length - 1 ? ',' : '')
+
+                    }, '')
+                    + '\n';
+            });
+        var URL = window.URL || window.webkitURL;
+        var blob = new Blob([contents], {
+            type: 'text/'+ format
+        });
+        ev.target.href = URL.createObjectURL(blob);
+        ev.target.download = 'data.'+format;
+    }
+    _replay() {
+        if (this._log.length === 0) {
+            console.log("no replay;")
+            return;
+        }
+        var idx = -1;
+        var interval = serInterval(function () {
+            idx++;
+            if (idx === this._log.length - 1) {
+                clearInterval(interval);
+            }
+            this.setState(this._log[idx]);
+        }.bind(this), 1000)
     }
     _save = (e) => {
         e.preventDefault();
@@ -23,7 +74,7 @@ class Excel extends React.Component {
             data: data
         })
     }
-    _search = (e)=> {
+    _search = (e) => {
         console.log("Searching");
         var needle = e.target.value.toLowerCase();
         if (!needle) { // search string is deleted
@@ -34,10 +85,10 @@ class Excel extends React.Component {
             return;
         }
         var idx = e.target.dataset.idx; // which col to search
-        var searchdata = this._preSearchData.filter(function(row) {
+        var searchdata = this._preSearchData.filter(function (row) {
             // true only if has the string -- TODO update indexOf to es6
             return row[idx].toString().toLowerCase().indexOf(needle) > -1;
-        }); 
+        });
         this.setState({
             data: searchdata
         });
@@ -99,22 +150,34 @@ class Excel extends React.Component {
                 this.props.headers.map(function (_ignore, idx) {
                     return React.createElement('td', {
                         key: idx
-                    }, 
-                    React.createElement('input', {
-                        type: 'text',
-                        'data-idx': idx
-                    }))
+                    },
+                        React.createElement('input', {
+                            type: 'text',
+                            'data-idx': idx
+                        }))
                 })
             )
         )
     }
     _renderToolbar() {
-        var searchString = this.state.search ? 'close': 'search'
+        var searchString = this.state.search ? 'close' : 'search'
         return (
-            React.createElement('button', {
-                onClick: this._toggleSearch,
-                className: 'toolbar'
-            }, searchString)
+            React.createElement('div', {
+                className: 'toolbar',
+            },
+                React.createElement('button', {
+                    onClick: this._toggleSearch,
+                    className: 'toolbar'
+                }, searchString),
+                React.createElement('a', {
+                    onClick: this._download.bind(this, 'json'),
+                    href: 'data.json'
+                }, 'Export JSON'),
+                React.createElement('a', {
+                    onClick: this._download.bind(this, 'csv'),
+                    href: 'data.csv'
+                }, 'Export CSV')
+            )
         )
     }
     _renderTable() {
@@ -134,7 +197,7 @@ class Excel extends React.Component {
                 React.createElement('tbody', {
                     onDoubleClick: this._showEditor
                 },
-                this._renderSearch(),
+                    this._renderSearch(),
                     this.state.data.map(function (row, rowidx) {
                         return (
                             React.createElement('tr', { key: rowidx },

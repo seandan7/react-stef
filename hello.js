@@ -14,6 +14,11 @@ var Excel = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (Excel.__proto__ || Object.getPrototypeOf(Excel)).call(this, props));
 
+        _this._logSetState = function (newState) {
+            _this._log.push(JSON.parse(JSON.stringify(_this._log.length === 0 ? _this.state : newState)));
+            _this.setState(newState);
+        };
+
         _this._save = function (e) {
             e.preventDefault();
             var input = e.target.firstChild;
@@ -86,6 +91,7 @@ var Excel = function (_React$Component) {
         };
 
         _this._preSearchData = null;
+        _this._log = [];
         _this.state = {
             headers: _this.props.headers,
             data: _this.props.initialData,
@@ -98,6 +104,48 @@ var Excel = function (_React$Component) {
     }
 
     _createClass(Excel, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            console.log("mounted");
+            document.onkeydown = function (e) {
+                if (e.altKey && e.shiftKey && e.keyCode === 82) {
+                    // alt+shift+r
+                    this._replay();
+                }
+            }.bind(this);
+        }
+    }, {
+        key: '_download',
+        value: function _download(format, ev) {
+            var contents = format === 'json' ? JSON.stringify(this.state.data) : this.state.data.reduce(function (result, row) {
+                return result + row.reduce(function (rowresult, cell, idx) {
+                    return rowresult + '"' + cell.replace(/"/g, '""') + '"' + (idx < row.length - 1 ? ',' : '');
+                }, '') + '\n';
+            });
+            var URL = window.URL || window.webkitURL;
+            var blob = new Blob([contents], {
+                type: 'text/' + format
+            });
+            ev.target.href = URL.createObjectURL(blob);
+            ev.target.download = 'data.' + format;
+        }
+    }, {
+        key: '_replay',
+        value: function _replay() {
+            if (this._log.length === 0) {
+                console.log("no replay;");
+                return;
+            }
+            var idx = -1;
+            var interval = serInterval(function () {
+                idx++;
+                if (idx === this._log.length - 1) {
+                    clearInterval(interval);
+                }
+                this.setState(this._log[idx]);
+            }.bind(this), 1000);
+        }
+    }, {
         key: 'render',
         value: function render() {
             return React.createElement('div', null, this._renderToolbar(), this._renderTable());
@@ -123,10 +171,18 @@ var Excel = function (_React$Component) {
         key: '_renderToolbar',
         value: function _renderToolbar() {
             var searchString = this.state.search ? 'close' : 'search';
-            return React.createElement('button', {
+            return React.createElement('div', {
+                className: 'toolbar'
+            }, React.createElement('button', {
                 onClick: this._toggleSearch,
                 className: 'toolbar'
-            }, searchString);
+            }, searchString), React.createElement('a', {
+                onClick: this._download.bind(this, 'json'),
+                href: 'data.json'
+            }, 'Export JSON'), React.createElement('a', {
+                onClick: this._download.bind(this, 'csv'),
+                href: 'data.csv'
+            }, 'Export CSV'));
         }
     }, {
         key: '_renderTable',
