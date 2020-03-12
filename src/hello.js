@@ -2,12 +2,14 @@ class Excel extends React.Component {
 
     constructor(props) {
         super(props);
+        this._preSearchData = null
         this.state = {
             headers: this.props.headers,
-            data:  this.props.initialData,
+            data: this.props.initialData,
             sortby: null,
             descending: false,
-            edit: null // row: index, cell: index
+            edit: null, // row: index, cell: index
+            search: false
         };
     }
     _save = (e) => {
@@ -20,6 +22,25 @@ class Excel extends React.Component {
             edit: null,
             data: data
         })
+    }
+    _search = (e)=> {
+        console.log("Searching");
+        var needle = e.target.value.toLowerCase();
+        if (!needle) { // search string is deleted
+            this.setState({
+                // revert
+                data: this._preSearchData
+            });
+            return;
+        }
+        var idx = e.target.dataset.idx; // which col to search
+        var searchdata = this._preSearchData.filter(function(row) {
+            // true only if has the string -- TODO update indexOf to es6
+            return row[idx].toString().toLowerCase().indexOf(needle) > -1;
+        }); 
+        this.setState({
+            data: searchdata
+        });
     }
     _showEditor = (e) => {
         this.setState({
@@ -34,9 +55,9 @@ class Excel extends React.Component {
         var data = this.state.data.slice();
         var descending = this.state.sortby === column && !this.state.descending;
         data.sort(function (a, b) {
-            return descending 
-            ? (a[column] < b[column] ? 1 : -1)
-            : (a[column] > b[column] ? 1 : -1)
+            return descending
+                ? (a[column] < b[column] ? 1 : -1)
+                : (a[column] > b[column] ? 1 : -1)
         });
         this.setState({
             data: data,
@@ -44,17 +65,67 @@ class Excel extends React.Component {
             descending: descending
         });
     }
-
+    _toggleSearch = () => {
+        if (this.state.search) {
+            this.setState({
+                data: this._preSearchData,
+                search: false
+            });
+            this._preSearchData = null;
+        } else {
+            this._preSearchData = this.state.data;
+            this.setState({
+                search: true
+            })
+        }
+    }
     render() {
-        
+        return (
+            React.createElement('div', null,
+                this._renderToolbar(),
+                this._renderTable()
+            )
+        )
+    }
+    _renderSearch() {
+        if (!this.state.search) {
+            return null;
+        }
+        return (
+
+            React.createElement('tr', {
+                onChange: this._search
+            },
+                this.props.headers.map(function (_ignore, idx) {
+                    return React.createElement('td', {
+                        key: idx
+                    }, 
+                    React.createElement('input', {
+                        type: 'text',
+                        'data-idx': idx
+                    }))
+                })
+            )
+        )
+    }
+    _renderToolbar() {
+        return (
+            React.createElement('button', {
+                onClick: this._toggleSearch,
+                className: 'toolbar'
+            }, 'search')
+        )
+    }
+    _renderTable() {
+
         return (
             React.createElement('table', null,
                 React.createElement('thead', { onClick: this._sort },
                     React.createElement('tr', null,
-                        this.props.headers.map( (title, idx) => {
-                           if (this.state.sortby === idx) {
-                               title += this.state.descending ? '\u2191':'\u2193'
-                           }
+                        this.props.headers.map((title, idx) => {
+                            if (this.state.sortby === idx) {
+                                title += this.state.descending ? '\u2191' : '\u2193'
+                            }
                             return React.createElement('th', { key: idx }, title);
                         })
                     )
@@ -62,6 +133,7 @@ class Excel extends React.Component {
                 React.createElement('tbody', {
                     onDoubleClick: this._showEditor
                 },
+                this._renderSearch(),
                     this.state.data.map(function (row, rowidx) {
                         return (
                             React.createElement('tr', { key: rowidx },
@@ -73,15 +145,15 @@ class Excel extends React.Component {
                                         content = React.createElement('form', {
                                             onSubmit: this._save
                                         },
-                                        React.createElement('input',{
-                                            type: 'text',
-                                            defaultValue: content
-                                        }))
+                                            React.createElement('input', {
+                                                type: 'text',
+                                                defaultValue: content
+                                            }))
                                     }
                                     return React.createElement('td', {
-                                         key: idx,  
-                                         'data-row': rowidx
-                                        }, content);
+                                        key: idx,
+                                        'data-row': rowidx
+                                    }, content);
                                 }, this)
                             )
                         );

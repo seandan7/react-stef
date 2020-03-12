@@ -26,6 +26,27 @@ var Excel = function (_React$Component) {
             });
         };
 
+        _this._search = function (e) {
+            console.log("Searching");
+            var needle = e.target.value.toLowerCase();
+            if (!needle) {
+                // search string is deleted
+                _this.setState({
+                    // revert
+                    data: _this._preSearchData
+                });
+                return;
+            }
+            var idx = e.target.dataset.idx; // which col to search
+            var searchdata = _this._preSearchData.filter(function (row) {
+                // true only if has the string -- TODO update indexOf to es6
+                return row[idx].toString().toLowerCase().indexOf(needle) > -1;
+            });
+            _this.setState({
+                data: searchdata
+            });
+        };
+
         _this._showEditor = function (e) {
             _this.setState({
                 edit: {
@@ -49,12 +70,29 @@ var Excel = function (_React$Component) {
             });
         };
 
+        _this._toggleSearch = function () {
+            if (_this.state.search) {
+                _this.setState({
+                    data: _this._preSearchData,
+                    search: false
+                });
+                _this._preSearchData = null;
+            } else {
+                _this._preSearchData = _this.state.data;
+                _this.setState({
+                    search: true
+                });
+            }
+        };
+
+        _this._preSearchData = null;
         _this.state = {
             headers: _this.props.headers,
             data: _this.props.initialData,
             sortby: null,
             descending: false,
-            edit: null // row: index, cell: index
+            edit: null, // row: index, cell: index
+            search: false
         };
         return _this;
     }
@@ -62,6 +100,36 @@ var Excel = function (_React$Component) {
     _createClass(Excel, [{
         key: 'render',
         value: function render() {
+            return React.createElement('div', null, this._renderToolbar(), this._renderTable());
+        }
+    }, {
+        key: '_renderSearch',
+        value: function _renderSearch() {
+            if (!this.state.search) {
+                return null;
+            }
+            return React.createElement('tr', {
+                onChange: this._search
+            }, this.props.headers.map(function (_ignore, idx) {
+                return React.createElement('td', {
+                    key: idx
+                }, React.createElement('input', {
+                    type: 'text',
+                    'data-idx': idx
+                }));
+            }));
+        }
+    }, {
+        key: '_renderToolbar',
+        value: function _renderToolbar() {
+            return React.createElement('button', {
+                onClick: this._toggleSearch,
+                className: 'toolbar'
+            }, 'search');
+        }
+    }, {
+        key: '_renderTable',
+        value: function _renderTable() {
             var _this2 = this;
 
             return React.createElement('table', null, React.createElement('thead', { onClick: this._sort }, React.createElement('tr', null, this.props.headers.map(function (title, idx) {
@@ -71,7 +139,7 @@ var Excel = function (_React$Component) {
                 return React.createElement('th', { key: idx }, title);
             }))), React.createElement('tbody', {
                 onDoubleClick: this._showEditor
-            }, this.state.data.map(function (row, rowidx) {
+            }, this._renderSearch(), this.state.data.map(function (row, rowidx) {
                 return React.createElement('tr', { key: rowidx }, row.map(function (cell, idx) {
                     var content = cell;
                     //  turn 'content' into an input if the idx and rowidx match the edited, otherwise, just text
