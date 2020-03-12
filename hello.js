@@ -14,6 +14,27 @@ var Excel = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (Excel.__proto__ || Object.getPrototypeOf(Excel)).call(this, props));
 
+        _this._save = function (e) {
+            e.preventDefault();
+            var input = e.target.firstChild;
+            // clone data so you dont directly manipulate state
+            var data = _this.state.data.slice();
+            data[_this.state.edit.row][_this.state.edit.cell] = input.value;
+            _this.setState({
+                edit: null,
+                data: data
+            });
+        };
+
+        _this._showEditor = function (e) {
+            _this.setState({
+                edit: {
+                    row: parseInt(e.target.dataset.row, 10),
+                    cell: e.target.cellIndex
+                }
+            });
+        };
+
         _this._sort = function (e) {
             var column = e.target.cellIndex;
             var data = _this.state.data.slice();
@@ -32,7 +53,8 @@ var Excel = function (_React$Component) {
             headers: _this.props.headers,
             data: _this.props.initialData,
             sortby: null,
-            descending: false
+            descending: false,
+            edit: null // row: index, cell: index
         };
         return _this;
     }
@@ -47,11 +69,27 @@ var Excel = function (_React$Component) {
                     title += _this2.state.descending ? '\u2191' : '\u2193';
                 }
                 return React.createElement('th', { key: idx }, title);
-            }))), React.createElement('tbody', null, this.state.data.map(function (row, idx) {
-                return React.createElement('tr', { key: idx }, row.map(function (cell, idx) {
-                    return React.createElement('td', { key: idx }, cell);
-                }));
-            })));
+            }))), React.createElement('tbody', {
+                onDoubleClick: this._showEditor
+            }, this.state.data.map(function (row, rowidx) {
+                return React.createElement('tr', { key: rowidx }, row.map(function (cell, idx) {
+                    var content = cell;
+                    //  turn 'content' into an input if the idx and rowidx match the edited, otherwise, just text
+                    var edit = this.state.edit;
+                    if (edit && edit.row === rowidx && edit.cell == idx) {
+                        content = React.createElement('form', {
+                            onSubmit: this._save
+                        }, React.createElement('input', {
+                            type: 'text',
+                            defaultValue: content
+                        }));
+                    }
+                    return React.createElement('td', {
+                        key: idx,
+                        'data-row': rowidx
+                    }, content);
+                }, this));
+            }, this)));
         }
     }]);
 
