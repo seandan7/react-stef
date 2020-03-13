@@ -12,10 +12,10 @@ class Button extends React.Component {
         let ariaLabel = "TODO: Add aria label here" || this.props.ariaLabel;
         return (
             this.props.href 
-            ?   <a aria-label={ariaLabel} {...this.props} className={this.classNames}></a>
-            :   <button aria-label={ariaLabel} {...this.props} className={this.classNames}></button>
+            ?   <a aria-label={ariaLabel} {...this.props} className={this.classNames}>{this.props.children}</a>
+            :   <button aria-label={ariaLabel} {...this.props} className={this.classNames}>{this.props.children}</button>
         )
-    }
+    } 
 }
 
 export default Button
