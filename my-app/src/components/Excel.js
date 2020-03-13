@@ -230,7 +230,7 @@ class Excel extends React.Component {
                                 <th
                                     className={`schema-${item.id}`}
                                     key={item.id}
-                                    onClick={this.sort.bind(this, item.id)}>
+                                    onClick={this._sort.bind(this, item.id)}>
                                     {title}
                                 </th>
                             )
