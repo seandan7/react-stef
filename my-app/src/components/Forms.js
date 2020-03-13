@@ -1,30 +1,44 @@
+import FormInput from './FormInput';
+import Rating from './Rating';
 import React from 'react';
 
 class Forms extends React.Component {
-    log(ev) {
-        console.log(ev.target.value);
-        console.log(ev.target.defaultValue)
+    getData() {
+        let data = {};
+        this.props.fields.forEach(field => {
+            data[field.id] = this.refs[field.id].getValue()
+        });
+        return data;
     }
     render() {
         return (
-            <div>
-                <textarea defaultValue={'hello world'} onChange={this.log}>
-
-                </textarea>
-                <textarea onChange={this.log}>
-                    
-                </textarea>
-                <select defaultValue="second">
-                    <option value="first">First</option>
-                    <option value="second">Second</option>
-                </select>
-                <select multiple={true} defaultValue={['second']}>
-                    <option value="first">First</option>
-                    <option value="second">Second</option>
-                </select>
-            </div>
+            <form className="Form">
+                {this.props.fields.map(field => {
+                    const prefilled = this.props.initialData && this.props.initialData[field.id];
+                    if(!this.props.readonly) {
+                        return (
+                            <div className="FormRow" key={field.id}>
+                                <label className="FormLabel" htmlFor={field.id}>{field.label}</label>
+                                <FormInput {...field} ref={field.id} defaultValue={prefilled}/>
+                            </div>
+                        );
+                    }
+                    if(!prefilled) {
+                        return null;
+                    }
+                    return (
+                        <div className="FormRow" key={field.id}>
+                            <span className="FormLabel">{field.label}: </span>
+                            {
+                                field.type === 'rating'
+                                ? <Rating readonly={true} defaultValue={parseInt(prefilled, 10)}/>
+                                : <div>{prefilled}</div>
+                            }
+                        </div>
+                    );
+                }, this)}
+            </form>
         )
     }
 }
-
 export default Forms;

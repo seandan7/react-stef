@@ -6,7 +6,8 @@ import Button from './components/Button';
 import Suggest from './components/Suggest';
 import Rating from './components/Rating';
 import FormInput from './components/FormInput';
-
+import Forms from './components/Forms';
+import Dialog from './components/Dialog';
 var headers = [
   "Book", "Author", "Language", "Published", "Sales"
 ];
@@ -68,6 +69,25 @@ function App() {
           </tr>
         </tbody>
       </table>
+      <h2>Forms</h2>
+      <Forms 
+        fields={[
+          {label: 'Rating', type: 'rating', id: 'rateme'},
+          {label: 'Greetings', id: 'freetext'}
+        ]}
+        initialData={
+          {
+            rateme: 4,
+            freetext: 'hello'
+          }
+        }
+      />
+      <h2>Dialog</h2>
+      <Dialog
+        hreader="Out-of-the-box example"
+        onAction={type => alert(type)}>
+          Hello Dialoag
+      </Dialog>
       <Excel headers={headers} initialData={data} />
     </div>
   );

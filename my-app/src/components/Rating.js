@@ -31,7 +31,6 @@ class Rating extends React.Component {
 
     render() {
         const stars = [];
-        console.log(this.props.max);
         for (let i = 1; i < this.props.max; i++) {
             stars.push(
                 <span
