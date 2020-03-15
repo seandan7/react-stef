@@ -73,7 +73,7 @@ class Excel extends React.Component {
             return;
         }
         let data = Array.from(this.state.data);
-        data[this.state.dialog.idx] = this.refs.form.geData();
+        data[this.state.dialog.idx] = this.refs.form.getData();
         this.setState({
             dialog: null,
             data: data

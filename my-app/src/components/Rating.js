@@ -53,7 +53,7 @@ class Rating extends React.Component {
                 {stars}
                 {this.props.readonly || !this.props.id 
                     ? null
-                    : <input type="hidden" id={this.props.id} value={this.state.rating} />
+                    : <input type="hidden" id={this.props.id} value="10" />
                 }
             </div>
         )

@@ -3,7 +3,6 @@ import Excel from './Excel';
 import Forms from './Forms';
 import Dialog from './Dialog';
 import Button from './Button';
-import classNames from 'classnames';
 
 class Whinepad extends React.Component {
     constructor(props) {
@@ -73,11 +72,7 @@ class Whinepad extends React.Component {
             data: searchdata
         })
     }
-    _onExcelDataChange(data) {
-        this.setState({
-            data: data
-        })
-    }
+   
     render() {
         return (
             <div className="Whinepad">
